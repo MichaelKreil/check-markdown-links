@@ -25,7 +25,7 @@ files = Array.from(Object.entries(files)).map(f => {
 	f[1].name = f[0];
 	return f[1]
 });
-check_html(files);
+await check_html(files);
 
 if (errorCount === 0) {
 	process.exit(0);
@@ -65,7 +65,9 @@ async function check_html(files) {
 		}
 	})
 
-	for (let [link, filenames] of linksInt.entries()) {
+	let entriesInt = Array.from(linksInt.entries());
+	console.log(`checking ${entriesInt.length} internal links`)
+	for (let [link, filenames] of entriesInt) {
 		if (linksKnown.has(link)) continue;
 		console.error(`\nUnknown link found: ${link}`.red);
 		console.error('   Used in: ' + filenames.join(', '));
@@ -73,16 +75,12 @@ async function check_html(files) {
 		errorCount += 1;
 	}
 
-	let entries = Array.from(linksExt.entries());
-	console.log(`checking ${entries.length} external links`)
-	await entries.forEachAsync(async ([link, filenames]) => {
-		let time = Date.now();
-
+	let entriesExt = Array.from(linksExt.entries());
+	console.log(`checking ${entriesExt.length} external links`)
+	await entriesExt.forEachAsync(async ([link, filenames]) => {
 		let response = await fetch(link);
-
-		console.log(link, Date.now() - time);
 		if (response.status === 200) return;
-		console.error(`External link unreachable: ${link}`.red);
+		console.error(`\nExternal link unreachable: ${link}`.red);
 		console.error('   Used in: ' + filenames.join(', '));
 		console.error('   Got status: ' + response.status);
 		errorCount += 1;
