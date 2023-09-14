@@ -1,0 +1,7 @@
+name: 'Check Markdown Links'
+description: 'Scans all Markdown files and check links (including anchor links)'
+author: 'MichaelKreil'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
