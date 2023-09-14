@@ -70,8 +70,8 @@ async function check_html(files) {
 	for (let [link, filenames] of entriesInt) {
 		if (linksKnown.has(link)) continue;
 		console.error(`\nUnknown link found: ${link}`.red);
-		console.error('   Used in: ' + filenames.join(', '));
-		console.error('   Maybe you mean: ' + closest(link, Array.from(linksKnown.values())).white);
+		console.error('   Used in: '.grey + filenames.join(', '));
+		console.error('   Maybe you mean: '.grey + findAlternative(link, linksKnown).green);
 		errorCount += 1;
 	}
 
@@ -81,8 +81,8 @@ async function check_html(files) {
 		let response = await fetch(link);
 		if (response.status === 200) return;
 		console.error(`\nExternal link unreachable: ${link}`.red);
-		console.error('   Used in: ' + filenames.join(', '));
-		console.error('   Got status: ' + response.status);
+		console.error('   Used in: '.grey + filenames.join(', '));
+		console.error('   Got status: '.grey + response.status);
 		errorCount += 1;
 	})
 
@@ -102,6 +102,13 @@ async function check_html(files) {
 			}
 
 		}
+	}
+
+	function findAlternative(name, set) {
+		if (set.size === 0) return '?';
+
+		let list = Array.from(set.values());
+		return closest(name, list);
 	}
 
 }
