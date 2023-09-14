@@ -6,4 +6,6 @@ WORKDIR /action
 
 RUN apk add --no-cache nodejs npm && npm i
 
-ENTRYPOINT ["node", "index.js"]
+WORKDIR /github/workspace
+
+ENTRYPOINT ["node", "/action/index.js"]
