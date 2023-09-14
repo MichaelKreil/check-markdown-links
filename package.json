@@ -1,0 +1,18 @@
+{
+  "name": "check-markdown-links",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Kreil <github@michael-kreil.de> (https://github.com/MichaelKreil)",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@metalsmith/markdown": "^1.10.0",
+    "colors": "^1.4.0",
+    "fastest-levenshtein": "^1.0.16",
+    "metalsmith": "^2.6.1"
+  }
+}
