@@ -78,7 +78,7 @@ async function check_html(files) {
 	let entriesExt = Array.from(linksExt.entries());
 	console.log(`checking ${entriesExt.length} external links`)
 	await entriesExt.forEachAsync(async ([link, filenames]) => {
-		let response = await fetch(link);
+		let response = await fetch(link, { headers: { accept: 'text/html' } });
 		if (response.status === 200) return;
 		console.error(`\nExternal link unreachable: ${link}`.red);
 		console.error('   Used in: '.grey + filenames.join(', '));
