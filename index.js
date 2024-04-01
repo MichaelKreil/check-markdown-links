@@ -78,11 +78,17 @@ async function check_html(files) {
 	let entriesExt = Array.from(linksExt.entries());
 	console.log(`checking ${entriesExt.length} external links`)
 	await entriesExt.forEachAsync(async ([link, filenames]) => {
-		let response = await fetch(link, { headers: { accept: 'text/html' } });
-		if (response.status === 200) return;
+		let error;
+		try {
+			let response = await fetch(link, { headers: { accept: 'text/html' } });
+			if (response.status === 200) return;
+			error = response.status;
+		} catch (err) {
+			error = err.toString();
+		}
 		console.error(`\nExternal link unreachable: ${link}`.red);
 		console.error('   Used in: '.grey + filenames.join(', '));
-		console.error('   Got status: '.grey + response.status);
+		console.error('   Got status: '.grey + error);
 		errorCount += 1;
 	})
 
