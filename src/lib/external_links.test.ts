@@ -9,7 +9,7 @@ describe('checkLink with real URLs', () => {
 		'https://github.com/',
 		'https://www.github.com/',
 		'https://versatiles.org/',
-		'https://www.akamai.com/solutions/content-delivery-network',
+		'https://www.akamai.com/',
 		'https://www.google.com/',
 	]
 
