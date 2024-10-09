@@ -1,11 +1,17 @@
 FROM alpine
 
-COPY index.js package.json package-lock.json /action/
+ADD . /action/
 
 WORKDIR /action
 
-RUN apk add --no-cache nodejs npm && npm i --include prod
+RUN \
+   apk add --no-cache nodejs npm && \
+	npm i && \
+	npm run build && \
+	rm -r node_modules && \
+	npm i --omit=dev && \
+	rm -r ~/.npm
 
 WORKDIR /github/workspace
 
-ENTRYPOINT ["node", "/action/src/index.js"]
+CMD ["node", "/action/dist/index.js"]
