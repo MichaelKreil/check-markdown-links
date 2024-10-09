@@ -18,7 +18,7 @@ const tempDirectory = 'temp-check-markdown-links';
 const metalsmith = new Metalsmith(directory);
 metalsmith.source('.');
 metalsmith.clean();
-metalsmith.ignore(['.*', '.git']);
+metalsmith.ignore(['node_modules', '.*', '.git']);
 metalsmith.destination(tempDirectory);
 metalsmith.use(markdown({ engineOptions: { pedantic: false, gfm: true } }))
 
