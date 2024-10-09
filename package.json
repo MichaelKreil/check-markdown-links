@@ -12,7 +12,7 @@
     "@metalsmith/markdown": "^1.10.0",
     "colors": "^1.4.0",
     "fastest-levenshtein": "^1.0.16",
-    "metalsmith": "^2.6.1",
-    "work-faster": "^0.3.4"
+    "metalsmith": "^2.6.3",
+    "work-faster": "^1.0.0"
   }
 }
