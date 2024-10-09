@@ -84,6 +84,7 @@ async function check_html(files: { name: string, contents: Buffer }[]) {
 
 		try {
 			await checkLink(link);
+			return;
 		} catch (err) {
 			error = String(err);
 		}
