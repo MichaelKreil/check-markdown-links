@@ -14,4 +14,4 @@ RUN \
 
 WORKDIR /github/workspace
 
-CMD ["node", "/action/dist/index.js"]
+ENTRYPOINT ["node", "/action/dist/index.js"]
