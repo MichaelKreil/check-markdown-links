@@ -7,10 +7,12 @@ describe('checkLink with real URLs', () => {
 	const urls = [
 		'https://en.wikipedia.org/wiki/Main_Page',
 		'https://github.com/',
-		'https://www.github.com/',
 		'https://versatiles.org/',
 		'https://www.akamai.com/',
+		'https://www.github.com/',
 		'https://www.google.com/',
+		'https://www.leaseweb.com/en/',
+		'https://www.ovhcloud.com/en-gb/network/cdn/',
 	]
 
 	for (const url of urls) {

@@ -9,7 +9,6 @@ export async function checkLink(url: string): Promise<true> {
 		const request = parsedUrl.protocol === 'https:' ? httpsRequest : httpRequest;
 
 		const options = {
-			method: 'HEAD',
 			headers: {
 				'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
 				'Accept-Encoding': 'gzip, deflate, br, zstd',
@@ -38,10 +37,11 @@ export async function checkLink(url: string): Promise<true> {
 				case 200:
 				case 301:
 				case 302:
+				case 307:
 					resolve(true);
 					break;
 				default:
-					reject(new Error(`not 200, got status: ${res.statusCode}`));
+					reject(new Error(`got status code: ${res.statusCode}`));
 			}
 			req.destroy();
 		});
