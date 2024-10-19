@@ -1,11 +1,10 @@
-FROM alpine
+FROM node:22-slim
 
 ADD . /action/
 
 WORKDIR /action
 
 RUN \
-   apk add --no-cache nodejs npm && \
 	npm i && \
 	npm run build && \
 	rm -r node_modules && \

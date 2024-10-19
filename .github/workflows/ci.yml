@@ -14,7 +14,7 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
 
     - name: Cache Node Modules
       id: cache-node-modules
@@ -37,3 +37,5 @@ jobs:
       run: npm run test
 
     - uses: michaelkreil/check-markdown-links@main
+      with:
+        path: src

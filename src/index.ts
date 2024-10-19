@@ -1,7 +1,8 @@
 import { getDocuments } from './lib/document.js';
 import { checkDocuments } from './lib/markdown.js';
+import { resolve } from 'node:path';
 
-const directory = process.cwd();
+const directory = resolve(process.cwd(), process.argv[2] ?? '.');
 const documents = await getDocuments(directory);
 const errors = await checkDocuments(documents);
 

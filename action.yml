@@ -1,7 +1,14 @@
 name: 'Check Markdown Links'
-description: 'Scans all Markdown files and check links (including anchor links)'
+description: 'Scans all Markdown files and checks links (including anchor links)'
 author: 'MichaelKreil'
+inputs:
+  path:
+    description: 'path'
+    required: false
+    default: '.'
 
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
