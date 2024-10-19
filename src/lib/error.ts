@@ -1,10 +1,19 @@
 import 'colors';
 
 export class CheckError {
-	constructor(type: string, sources: string[], message: string) {
-		console.error(`\n${type}`.red);
-		console.error('   Used in: '.grey + sources.join(', '));
+	errType: string;
+	sourceString: string;
+	message: string;
+	constructor(errType: string, sources: string[], message: string) {
+		this.errType = errType;
+		this.sourceString = sources.map(s => `"${s}"`).join(', ');
+		this.message = message;
+		console.error(`\n${errType}`.red);
+		console.error('   Used in: '.grey + this.sourceString);
 		console.error('   ' + message.grey);
+	}
+	toString(): string {
+		return this.errType + ' in ' + this.sourceString;
 	}
 }
 

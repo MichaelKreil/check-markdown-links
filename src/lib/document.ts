@@ -1,6 +1,18 @@
-import { marked } from 'marked';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import rehypeStringify from 'rehype-stringify'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeSlug from 'rehype-slug'
+import { unified } from 'unified'
+
+const processor = unified()
+	.use(remarkParse)
+	.use(remarkGfm)
+	.use(remarkRehype)
+	.use(rehypeSlug)
+	.use(rehypeStringify)
 
 export interface Document {
 	url: string;
@@ -22,7 +34,7 @@ export async function getDocuments(directory: string): Promise<Document[]> {
 				await recursiveScan(fullPath);
 			} else if (file.isFile() && fullPath.endsWith('.md')) {
 				const markdown = await readFile(fullPath, 'utf-8');
-				const html = await marked(markdown);
+				const html = (await processor.process(markdown)).toString();
 				documents.push({
 					url: relative(directory, fullPath.replace(/\.md$/i, '')),
 					html

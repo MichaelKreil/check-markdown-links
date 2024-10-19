@@ -22,15 +22,13 @@ export async function checkDocuments(documents: Document[]): Promise<CheckErrors
 			}
 		}
 	})
-	console.log({ linksExt, linksInt, linksKnown });
 
 	const entriesInt = Array.from(linksInt.entries());
 	console.log(`checking ${entriesInt.length} internal links`)
 	for (const [link, filenames] of entriesInt) {
-		console.log({ link });
 		if (linksKnown.has(link)) continue;
 
-		errors.add(`Unknown link found: ${link}`, filenames, 'Maybe you mean: ' + findAlternative(link, linksKnown));
+		errors.add(`Unknown link found "${link}"`, filenames, 'Maybe you mean: ' + findAlternative(link, linksKnown));
 	}
 
 	const entriesExt = Array.from(linksExt.entries());
@@ -45,7 +43,7 @@ export async function checkDocuments(documents: Document[]): Promise<CheckErrors
 			error = String(err);
 		}
 
-		errors.add(`External link unreachable: ${link}`, filenames, 'Got status: ' + error);
+		errors.add(`External link unreachable "${link}"`, filenames, 'Got status: ' + error);
 	})
 
 	return errors;
