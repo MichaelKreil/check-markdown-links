@@ -19,10 +19,19 @@ export interface Document {
 	html: string;
 }
 
-export async function getDocuments(directory: string): Promise<Document[]> {
+export async function getDocuments(directory: string): Promise<{ documents: Document[], linksKnown: Set<string> }> {
 	const documents: Document[] = [];
+	const linksKnown = new Set<string>();
+
 	await recursiveScan(directory);
-	return documents;
+
+	documents.forEach(document => {
+		for (const m of document.html.matchAll(/ id="(.*?)"/g)) {
+			linksKnown.add(document.url + '#' + m[1]);
+		}
+	})
+
+	return { documents, linksKnown };
 
 	async function recursiveScan(subDirectory: string): Promise<void> {
 		const files = await readdir(subDirectory, { withFileTypes: true });
@@ -32,30 +41,16 @@ export async function getDocuments(directory: string): Promise<Document[]> {
 			if (file.name === 'node_modules') continue;
 
 			const fullPath = join(subDirectory, file.name);
+			const url = relative(directory, fullPath);
+			linksKnown.add(url);
 
 			if (file.isDirectory()) {
 				await recursiveScan(fullPath);
 			} else if (file.isFile() && fullPath.endsWith('.md')) {
 				const markdown = await readFile(fullPath, 'utf-8');
 				const html = (await processor.process(markdown)).toString();
-				documents.push({
-					url: relative(directory, fullPath.replace(/\.md$/i, '')),
-					html
-				});
+				documents.push({ url, html });
 			}
 		}
 	}
-}
-
-export function getKnownLinks(documents: Document[]): Set<string> {
-	const linksKnown = new Set<string>();
-	documents.forEach(document => {
-		linksKnown.add(document.url);
-
-		for (const m of document.html.matchAll(/id="(.*?)"/g)) {
-			linksKnown.add(document.url + '#' + m[1]);
-		}
-	})
-
-	return linksKnown;
 }

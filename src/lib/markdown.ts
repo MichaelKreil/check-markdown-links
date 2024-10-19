@@ -1,15 +1,17 @@
 import { forEachAsync } from 'work-faster';
-import { Document, getKnownLinks } from './document.js';
+import { getDocuments } from './document.js';
 import { CheckErrors } from './error.js';
 import { checkLink } from './external_link.js';
 import { closest } from 'fastest-levenshtein';
 import { dirname, join } from 'node:path';
 
-export async function checkDocuments(documents: Document[]): Promise<CheckErrors> {
+export async function checkDocuments(directory: string): Promise<CheckErrors> {
+	const { documents, linksKnown } = await getDocuments(directory);
+
 	const errors = new CheckErrors();
-	const linksKnown = getKnownLinks(documents);
 	const linksExt = new Map();
 	const linksInt = new Map();
+
 	documents.forEach(d => {
 		for (const match of d.html.matchAll(/ (href|src)="(.*?)"/g)) {
 			const url = decodeURIComponent(match[2]);
