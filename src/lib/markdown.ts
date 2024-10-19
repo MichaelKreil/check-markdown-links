@@ -21,6 +21,7 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 		function check(url: string) {
 			if (!url) return;
 			if (url.length < 1) return;
+			url = decodeURIComponent(url);
 
 			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, d.url, true);
 			if (url.startsWith('#')) return addLinkOut(d.url + url, d.url);
