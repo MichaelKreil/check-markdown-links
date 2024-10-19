@@ -1,9 +1,9 @@
 import { forEachAsync } from 'work-faster';
 import { Document, getKnownLinks } from './document.js';
 import { CheckErrors } from './error.js';
-import { dirname, join } from 'node:path';
 import { checkLink } from './external_link.js';
 import { closest } from 'fastest-levenshtein';
+import { dirname, join } from 'node:path';
 
 export async function checkDocuments(documents: Document[]): Promise<CheckErrors> {
 	const errors = new CheckErrors();
@@ -14,19 +14,20 @@ export async function checkDocuments(documents: Document[]): Promise<CheckErrors
 		for (const match of d.html.matchAll(/ (href|src)="(.*?)"/g)) {
 			const url = decodeURIComponent(match[2]);
 			if (url.startsWith('http://') || url.startsWith('https://')) {
-				addLinkOut(url, d.filename, true)
+				addLinkOut(url, d.url, true)
 			} else if (url.startsWith('#')) {
-				addLinkOut(d.filename + url, d.filename)
+				addLinkOut(d.url + url, d.url);
 			} else {
-				addLinkOut(join(dirname(d.filename), url), d.filename)
+				addLinkOut(join(dirname(d.url), url), d.url)
 			}
 		}
-
 	})
+	console.log({ linksExt, linksInt, linksKnown });
 
 	const entriesInt = Array.from(linksInt.entries());
 	console.log(`checking ${entriesInt.length} internal links`)
 	for (const [link, filenames] of entriesInt) {
+		console.log({ link });
 		if (linksKnown.has(link)) continue;
 
 		errors.add(`Unknown link found: ${link}`, filenames, 'Maybe you mean: ' + findAlternative(link, linksKnown));
@@ -50,18 +51,18 @@ export async function checkDocuments(documents: Document[]): Promise<CheckErrors
 	return errors;
 
 
-	function addLinkOut(href: string, filename: string, external?: true) {
+	function addLinkOut(href: string, source: string, external?: true) {
 		if (external) {
 			if (linksExt.has(href)) {
-				linksExt.get(href).push(filename);
+				linksExt.get(href).push(source);
 			} else {
-				linksExt.set(href, [filename]);
+				linksExt.set(href, [source]);
 			}
 		} else {
 			if (linksInt.has(href)) {
-				linksInt.get(href).push(filename);
+				linksInt.get(href).push(source);
 			} else {
-				linksInt.set(href, [filename]);
+				linksInt.set(href, [source]);
 			}
 		}
 	}

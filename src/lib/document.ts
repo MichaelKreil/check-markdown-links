@@ -3,7 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 export interface Document {
-	filename: string;
+	url: string;
 	html: string;
 }
 
@@ -24,7 +24,7 @@ export async function getDocuments(directory: string): Promise<Document[]> {
 				const markdown = await readFile(fullPath, 'utf-8');
 				const html = await marked(markdown);
 				documents.push({
-					filename: relative(directory, fullPath),
+					url: relative(directory, fullPath.replace(/\.md$/i, '')),
 					html
 				});
 			}
@@ -35,10 +35,11 @@ export async function getDocuments(directory: string): Promise<Document[]> {
 export function getKnownLinks(documents: Document[]): Set<string> {
 	const linksKnown = new Set<string>();
 	documents.forEach(document => {
-		linksKnown.add(document.filename);
+		linksKnown.add(document.url);
 
-		for (const m of document.html.matchAll(/ id="(.*?)"/g)) {
-			linksKnown.add(document.filename + '#' + m[1]);
+		console.log(document.html);
+		for (const m of document.html.matchAll(/id="(.*?)"/g)) {
+			linksKnown.add(document.url + '#' + m[1]);
 		}
 	})
 
