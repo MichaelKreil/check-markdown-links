@@ -28,6 +28,9 @@ export async function getDocuments(directory: string): Promise<Document[]> {
 		const files = await readdir(subDirectory, { withFileTypes: true });
 
 		for (const file of files) {
+			if (file.name.startsWith('.')) continue;
+			if (file.name === 'node_modules') continue;
+
 			const fullPath = join(subDirectory, file.name);
 
 			if (file.isDirectory()) {
