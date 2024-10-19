@@ -1,16 +1,13 @@
 'use strict'
 
 import Metalsmith from 'metalsmith';
-import 'colors';
 import 'work-faster';
 import markdown from '@metalsmith/markdown'
 import { dirname, join } from 'node:path';
 import { closest } from 'fastest-levenshtein';
 import { forEachAsync } from 'work-faster';
 import { checkLink } from './lib/external_link.js';
-
-
-let errorCount = 0;
+import { CheckErrors } from './lib/error.js';
 
 const directory = process.cwd();
 const tempDirectory = 'temp-check-markdown-links';
@@ -27,15 +24,16 @@ const fileList = Array.from(Object.entries(fileMap)).map(f => ({
 	name: f[0],
 	contents: f[1].contents,
 }));
-await check_html(fileList);
+const errors = await check_html(fileList);
 
-if (errorCount === 0) {
+if (errors.isEmpty()) {
 	process.exit(0);
 } else {
 	process.exit(1);
 }
 
-async function check_html(files: { name: string, contents: Buffer }[]) {
+async function check_html(files: { name: string, contents: Buffer }[]): Promise<CheckErrors> {
+	const errors = new CheckErrors();
 	const linksKnown = new Set<string>();
 	const linksExt = new Map();
 	const linksInt = new Map();
@@ -71,10 +69,8 @@ async function check_html(files: { name: string, contents: Buffer }[]) {
 	console.log(`checking ${entriesInt.length} internal links`)
 	for (const [link, filenames] of entriesInt) {
 		if (linksKnown.has(link)) continue;
-		console.error(`\nUnknown link found: ${link}`.red);
-		console.error('   Used in: '.grey + filenames.join(', '));
-		console.error('   Maybe you mean: '.grey + findAlternative(link, linksKnown).green);
-		errorCount += 1;
+
+		errors.add(`Unknown link found: ${link}`, filenames, 'Maybe you mean: ' + findAlternative(link, linksKnown));
 	}
 
 	const entriesExt = Array.from(linksExt.entries());
@@ -89,11 +85,10 @@ async function check_html(files: { name: string, contents: Buffer }[]) {
 			error = String(err);
 		}
 
-		console.error(`\nExternal link unreachable: ${link}`.red);
-		console.error('   Used in: '.grey + filenames.join(', '));
-		console.error('   Got status: '.grey + error);
-		errorCount += 1;
+		errors.add(`External link unreachable: ${link}`, filenames, 'Got status: ' + error);
 	})
+
+	return errors;
 
 
 	function addLinkOut(href: string, filename: string, external?: true) {
