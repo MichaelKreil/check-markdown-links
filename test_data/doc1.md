@@ -9,4 +9,4 @@
 [error3](#header-3)
 
 [external](https://www.google.com)
-[error4](https://www.google12.com)
+[error4](https://this-domain-would-only-be-bought-by-someone-who-is-bored-and.rich)
