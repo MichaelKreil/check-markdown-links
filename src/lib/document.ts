@@ -52,7 +52,6 @@ export function getKnownLinks(documents: Document[]): Set<string> {
 	documents.forEach(document => {
 		linksKnown.add(document.url);
 
-		console.log(document.html);
 		for (const m of document.html.matchAll(/id="(.*?)"/g)) {
 			linksKnown.add(document.url + '#' + m[1]);
 		}
