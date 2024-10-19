@@ -1,11 +1,12 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
-import rehypeStringify from 'rehype-stringify'
-import remarkGfm from 'remark-gfm'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeSlug from 'rehype-slug'
-import { unified } from 'unified'
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeSlug from 'rehype-slug';
+import { unified } from 'unified';
+import * as cheerio from 'cheerio';
 
 const processor = unified()
 	.use(remarkParse)
@@ -26,9 +27,11 @@ export async function getDocuments(directory: string): Promise<{ documents: Docu
 	await recursiveScan(directory);
 
 	documents.forEach(document => {
-		for (const m of document.html.matchAll(/ id="(.*?)"/g)) {
-			linksKnown.add(document.url + '#' + m[1]);
-		}
+		const $ = cheerio.load(document.html);
+		$('[id]').each((i, e) => {
+			const id = e.attribs['id'];
+			if (id && id.length > 0) linksKnown.add(document.url + '#' + id);
+		})
 	})
 
 	return { documents, linksKnown };

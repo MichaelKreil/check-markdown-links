@@ -4,6 +4,7 @@ import { CheckErrors } from './error.js';
 import { checkLink } from './external_link.js';
 import { closest } from 'fastest-levenshtein';
 import { dirname, join } from 'node:path';
+import * as cheerio from 'cheerio';
 
 export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	const { documents, linksKnown } = await getDocuments(directory);
@@ -13,15 +14,17 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	const linksInt = new Map();
 
 	documents.forEach(d => {
-		for (const match of d.html.matchAll(/ (href|src)="(.*?)"/g)) {
-			const url = decodeURIComponent(match[2]);
-			if (url.startsWith('http://') || url.startsWith('https://')) {
-				addLinkOut(url, d.url, true)
-			} else if (url.startsWith('#')) {
-				addLinkOut(d.url + url, d.url);
-			} else {
-				addLinkOut(join(dirname(d.url), url), d.url)
-			}
+		const $ = cheerio.load(d.html);
+		$('[href]').each((i, e) => check(e.attribs['href']));
+		$('[src]').each((i, e) => check(e.attribs['src']));
+
+		function check(url: string) {
+			if (!url) return;
+			if (url.length < 1) return;
+
+			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, d.url, true);
+			if (url.startsWith('#')) return addLinkOut(d.url + url, d.url);
+			addLinkOut(join(dirname(d.url), url), d.url)
 		}
 	})
 
