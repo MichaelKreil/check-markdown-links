@@ -5,13 +5,16 @@ import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeSlug from 'rehype-slug';
-import { unified } from 'unified';
+import { type Plugin, unified } from 'unified';
+import { visit } from 'unist-util-visit';
 import * as cheerio from 'cheerio';
+import type { Element, Root } from 'hast';
 
 const processor = unified()
 	.use(remarkParse)
 	.use(remarkGfm)
 	.use(remarkRehype)
+	.use(extractPositionsHTML as unknown as Plugin)
 	.use(rehypeSlug)
 	.use(rehypeStringify)
 
@@ -56,4 +59,12 @@ export async function getDocuments(directory: string): Promise<{ documents: Docu
 			}
 		}
 	}
+}
+
+function extractPositionsHTML(): (tree: Element & Root) => void {
+	return (tree: Element & Root) => visit(tree, (node: Element) => {
+		if (node.type === 'element' && node.position) {
+			node.properties.dataLine = JSON.stringify(node.position.start.line);
+		}
+	})
 }

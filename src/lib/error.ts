@@ -1,12 +1,32 @@
 import 'colors';
 
+export interface Source {
+	filename: string;
+	line: number;
+}
+
 export class CheckError {
 	errType: string;
 	sourceString: string;
 	message: string;
-	constructor(errType: string, sources: string[], message: string) {
+	constructor(errType: string, sources: Source[], message: string) {
+		const mapFileSources = new Map<string, number[]>();
+		sources.forEach(s => {
+			const entry = mapFileSources.get(s.filename);
+			if (entry) {
+				entry.push(s.line);
+			} else {
+				mapFileSources.set(s.filename, [s.line]);
+			}
+		});
+
+		this.sourceString = Array.from(mapFileSources.entries()).map(([f, l]: [string, number[]]) => {
+			return `${f} (L:${l.sort((a, b) => a - b).join(',')})`;
+		}).join(', ');
+
+
+
 		this.errType = errType;
-		this.sourceString = sources.map(s => `"${s}"`).join(', ');
 		this.message = message;
 		console.error(`\n${errType}`.red);
 		console.error('   Used in: '.grey + this.sourceString);
@@ -20,7 +40,7 @@ export class CheckError {
 export class CheckErrors {
 	errors: CheckError[] = [];
 	constructor() { };
-	add(type: string, sources: string[], message: string) {
+	add(type: string, sources: Source[], message: string) {
 		this.errors.push(new CheckError(type, sources, message));
 	}
 	isEmpty(): boolean {

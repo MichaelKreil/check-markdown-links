@@ -1,31 +1,37 @@
 import { forEachAsync } from 'work-faster';
 import { getDocuments } from './document.js';
-import { CheckErrors } from './error.js';
+import { CheckErrors, Source } from './error.js';
 import { checkLink } from './external_link.js';
 import { closest } from 'fastest-levenshtein';
 import { dirname, join } from 'node:path';
 import * as cheerio from 'cheerio';
+import type { Element } from 'domhandler';
 
 export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	const { documents, linksKnown } = await getDocuments(directory);
 
 	const errors = new CheckErrors();
-	const linksExt = new Map();
-	const linksInt = new Map();
+	const linksExt = new Map<string, Source[]>();
+	const linksInt = new Map<string, Source[]>();
 
-	documents.forEach(d => {
-		const $ = cheerio.load(d.html);
-		$('[href]').each((i, e) => check(e.attribs['href']));
-		$('[src]').each((i, e) => check(e.attribs['src']));
+	documents.forEach(document => {
+		const $ = cheerio.load(document.html);
+		$('[href]').each((i, e) => check(e, 'href'));
+		$('[src]').each((i, e) => check(e, 'src'));
 
-		function check(url: string) {
+		function check(e: Element, property: string) {
+			let url = e.attribs[property];
+			const line = parseInt(e.attribs['data-line'], 10);
+
 			if (!url) return;
 			if (url.length < 1) return;
 			url = decodeURIComponent(url);
 
-			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, d.url, true);
-			if (url.startsWith('#')) return addLinkOut(d.url + url, d.url);
-			addLinkOut(join(dirname(d.url), url), d.url)
+			const source: Source = { filename: document.url, line }
+
+			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, source, true);
+			if (url.startsWith('#')) return addLinkOut(document.url + url, source);
+			addLinkOut(join(dirname(document.url), url), source)
 		}
 	})
 
@@ -55,19 +61,13 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	return errors;
 
 
-	function addLinkOut(href: string, source: string, external?: true) {
-		if (external) {
-			if (linksExt.has(href)) {
-				linksExt.get(href).push(source);
-			} else {
-				linksExt.set(href, [source]);
-			}
+	function addLinkOut(href: string, source: Source, external?: true) {
+		const map = external ? linksExt : linksInt;
+		const entry = map.get(href);
+		if (entry) {
+			entry.push(source);
 		} else {
-			if (linksInt.has(href)) {
-				linksInt.get(href).push(source);
-			} else {
-				linksInt.set(href, [source]);
-			}
+			map.set(href, [source]);
 		}
 	}
 

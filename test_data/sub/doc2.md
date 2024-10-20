@@ -1,7 +1,9 @@
 
 # header 3
 [test4](../doc1.md#header-2)
+[error1b](#header-1)
 [error2](../doc1.md#header-3)
+[error1c](#header-1)
 
 [image](../0.png)
 
