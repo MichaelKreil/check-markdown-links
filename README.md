@@ -19,6 +19,6 @@ jobs:
   check-links:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v4
     - uses: michaelkreil/check-markdown-links@main
 ```
