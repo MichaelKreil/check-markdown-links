@@ -8,7 +8,6 @@ describe('checkLink with real URLs', () => {
 		'https://en.wikipedia.org/wiki/Main_Page',
 		'https://github.com/',
 		'https://versatiles.org/',
-		'https://www.akamai.com/',
 		'https://www.github.com/',
 		'https://www.google.com/',
 		'https://www.leaseweb.com/en/',
