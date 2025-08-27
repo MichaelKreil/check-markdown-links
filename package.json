@@ -31,11 +31,11 @@
     "@types/hast": "^3.0.4",
     "@types/jest": "^30.0.0",
     "domhandler": "^5.0.3",
-    "eslint": "^9.32.0",
+    "eslint": "^9.34.0",
     "jest": "^30.0.5",
-    "npm-check-updates": "^18.0.2",
-    "ts-jest": "^29.4.0",
-    "tsx": "^4.20.3",
-    "typescript-eslint": "^8.38.0"
+    "npm-check-updates": "^18.0.3",
+    "ts-jest": "^29.4.1",
+    "tsx": "^4.20.5",
+    "typescript-eslint": "^8.41.0"
   }
 }
