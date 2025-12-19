@@ -1,5 +1,4 @@
 import { checkDocuments } from './lib/markdown.js';
-import { vi } from 'vitest';
 
 vi.spyOn(console, 'error').mockReturnValue();
 

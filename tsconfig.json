@@ -3,6 +3,9 @@
 		"lib": [
 			"ESNext"
 		],
+		"types": [
+			"vitest/globals"
+		],
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"target": "ES2022",
