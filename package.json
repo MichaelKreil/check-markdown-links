@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/index.js",
-    "check": "npm run lint && npm run build && npm run test",
+    "check": "npm run lint && npm run build && npm run test && npm run format:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint . --color",
     "start": "tsx src/index.ts",
     "test": "vitest run",
@@ -33,6 +35,7 @@
     "domhandler": "^5.0.3",
     "eslint": "^9.39.2",
     "npm-check-updates": "^19.2.0",
+    "prettier": "^3.7.4",
     "tsx": "^4.21.0",
     "typescript-eslint": "^8.50.0",
     "vitest": "^3.0.0"
