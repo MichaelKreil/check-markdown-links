@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import * as cheerio from 'cheerio';
 import type { Element } from 'domhandler';
 
-export async function checkDocuments(directory: string): Promise<CheckErrors> {
+export async function checkDocuments(directory: string, skipHosts: Set<string> = new Set()): Promise<CheckErrors> {
 	const { documents, linksKnown } = await getDocuments(directory);
 
 	const errors = new CheckErrors();
@@ -30,7 +30,17 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 			const source: Source = { filename: document.url, line };
 
 			if (/^https?:\/\/(localhost|127\.0\.0\.1)/.test(url)) return; // ignore local links
-			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, source, true);
+
+			// Check if hostname should be skipped
+			if (url.startsWith('http://') || url.startsWith('https://')) {
+				try {
+					const parsedUrl = new URL(url);
+					if (skipHosts.has(parsedUrl.hostname)) return; // skip this host
+				} catch {
+					// If URL parsing fails, still check the link
+				}
+				return addLinkOut(url, source, true);
+			}
 			if (url.startsWith('#')) return addLinkOut(document.url + url, source);
 			addLinkOut(join(dirname(document.url), url), source);
 		}

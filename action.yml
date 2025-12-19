@@ -6,6 +6,10 @@ inputs:
     description: 'path'
     required: false
     default: '.'
+  skip_hosts:
+    description: 'Newline-separated list of hostnames to skip during external link checking'
+    required: false
+    default: ''
 
 runs:
   using: 'docker'

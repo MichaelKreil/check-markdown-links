@@ -16,4 +16,16 @@ describe('run on test_data', () => {
 			'External link unreachable "https://this-domain-would-only-be-bought-by-someone-who-is-bored-and.rich" in doc1.md (L:13)'
 		);
 	});
+
+	test('skip_hosts should skip specified hostnames', async () => {
+		const directory = new URL('../test_data', import.meta.url).pathname;
+		const skipHosts = new Set(['this-domain-would-only-be-bought-by-someone-who-is-bored-and.rich']);
+		const result = await checkDocuments(directory, skipHosts);
+		const { errors } = result;
+		expect(errors.length).toBe(2);
+		expect(errors[0].toString()).toBe(
+			'Unknown link found "sub/doc2.md#header-1" in doc1.md (L:9), sub/doc2.md (L:4,6)'
+		);
+		expect(errors[1].toString()).toBe('Unknown link found "doc1.md#header-3" in doc1.md (L:10), sub/doc2.md (L:5)');
+	});
 });
