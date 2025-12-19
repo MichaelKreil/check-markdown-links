@@ -1,8 +1,7 @@
 import { checkDocuments } from './lib/markdown.js';
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-jest.spyOn(console, 'error').mockReturnValue();
-//jest.spyOn(console, 'log').mockReturnValue();
+vi.spyOn(console, 'error').mockReturnValue();
 
 describe('run on test_data', () => {
 	test('their should be no errors', async () => {

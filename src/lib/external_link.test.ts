@@ -1,8 +1,6 @@
 import { checkLink } from './external_link.js';
-import { jest } from '@jest/globals';
 
 describe('checkLink with real URLs', () => {
-	jest.setTimeout(3000);
 
 	const urls = [
 		'https://en.wikipedia.org/wiki/Main_Page',
@@ -19,6 +17,6 @@ describe('checkLink with real URLs', () => {
 		test('test ' + name, async () => {
 			const result = await checkLink(url);
 			expect(result).toBe(true);
-		})
+		}, 3000)
 	}
 });
