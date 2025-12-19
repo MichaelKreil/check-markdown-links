@@ -1,7 +1,6 @@
 import { checkLink } from './external_link.js';
 
 describe('checkLink with real URLs', () => {
-
 	const urls = [
 		'https://en.wikipedia.org/wiki/Main_Page',
 		'https://github.com/',
@@ -10,13 +9,17 @@ describe('checkLink with real URLs', () => {
 		'https://www.google.com/',
 		'https://www.leaseweb.com/en/',
 		'https://www.ovhcloud.com/en-gb/network/cdn/',
-	]
+	];
 
 	for (const url of urls) {
 		const name = url.replace(/^https?:\/\/(www\.)?|\/+$/g, '');
-		test('test ' + name, async () => {
-			const result = await checkLink(url);
-			expect(result).toBe(true);
-		}, 3000)
+		test(
+			'test ' + name,
+			async () => {
+				const result = await checkLink(url);
+				expect(result).toBe(true);
+			},
+			3000
+		);
 	}
 });

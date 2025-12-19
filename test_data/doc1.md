@@ -1,8 +1,9 @@
-
 # header 1
+
 [test1](#header-2)
 
 # header 2
+
 [test2](#header-1)
 [test3](sub/doc2.md#header-3)
 [error1a](sub/doc2.md#header-1)

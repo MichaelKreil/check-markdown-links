@@ -9,33 +9,33 @@ jobs:
     name: Lint, Test and Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    
-    - name: Setup Node
-      uses: actions/setup-node@v6
-      with:
-        node-version: 22
+      - uses: actions/checkout@v5
 
-    - name: Cache Node Modules
-      id: cache-node-modules
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
 
-    - name: Install dependencies
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      run: npm ci
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-    - name: Check vulnerabilities
-      run: npm audit
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
 
-    - name: Lint
-      run: npm run lint
+      - name: Check vulnerabilities
+        run: npm audit
 
-    - name: Tests
-      run: npm run test
+      - name: Lint
+        run: npm run lint
 
-    - uses: michaelkreil/check-markdown-links@main
-      with:
-        path: src
+      - name: Tests
+        run: npm run test
+
+      - uses: michaelkreil/check-markdown-links@main
+        with:
+          path: src

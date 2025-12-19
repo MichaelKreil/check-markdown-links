@@ -14,7 +14,7 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	const linksExt = new Map<string, Source[]>();
 	const linksInt = new Map<string, Source[]>();
 
-	documents.forEach(document => {
+	documents.forEach((document) => {
 		const $ = cheerio.load(document.html);
 		$('[href]').each((i, e) => check(e, 'href'));
 		$('[src]').each((i, e) => check(e, 'src'));
@@ -27,17 +27,17 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 			if (url.length < 1) return;
 			url = decodeURIComponent(url);
 
-			const source: Source = { filename: document.url, line }
+			const source: Source = { filename: document.url, line };
 
 			if (/^https?:\/\/(localhost|127\.0\.0\.1)/.test(url)) return; // ignore local links
 			if (url.startsWith('http://') || url.startsWith('https://')) return addLinkOut(url, source, true);
 			if (url.startsWith('#')) return addLinkOut(document.url + url, source);
-			addLinkOut(join(dirname(document.url), url), source)
+			addLinkOut(join(dirname(document.url), url), source);
 		}
-	})
+	});
 
 	const entriesInt = Array.from(linksInt.entries());
-	console.log(`checking ${entriesInt.length} internal links`)
+	console.log(`checking ${entriesInt.length} internal links`);
 	for (const [link, filenames] of entriesInt) {
 		if (linksKnown.has(link)) continue;
 
@@ -45,7 +45,7 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 	}
 
 	const entriesExt = Array.from(linksExt.entries());
-	console.log(`checking ${entriesExt.length} external links`)
+	console.log(`checking ${entriesExt.length} external links`);
 	await forEachAsync(entriesExt, async ([link, filenames]) => {
 		let error;
 
@@ -57,10 +57,9 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 		}
 
 		errors.add(`External link unreachable "${link}"`, filenames, 'Got status: ' + error);
-	})
+	});
 
 	return errors;
-
 
 	function addLinkOut(href: string, source: Source, external?: true) {
 		const map = external ? linksExt : linksInt;
@@ -78,5 +77,4 @@ export async function checkDocuments(directory: string): Promise<CheckErrors> {
 		const list = Array.from(set.values());
 		return closest(name, list);
 	}
-
 }

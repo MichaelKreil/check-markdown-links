@@ -16,26 +16,26 @@ const processor = unified()
 	.use(remarkRehype)
 	.use(extractPositionsHTML as unknown as Plugin)
 	.use(rehypeSlug)
-	.use(rehypeStringify)
+	.use(rehypeStringify);
 
 export interface Document {
 	url: string;
 	html: string;
 }
 
-export async function getDocuments(directory: string): Promise<{ documents: Document[], linksKnown: Set<string> }> {
+export async function getDocuments(directory: string): Promise<{ documents: Document[]; linksKnown: Set<string> }> {
 	const documents: Document[] = [];
 	const linksKnown = new Set<string>();
 
 	await recursiveScan(directory);
 
-	documents.forEach(document => {
+	documents.forEach((document) => {
 		const $ = cheerio.load(document.html);
 		$('[id]').each((i, e) => {
 			const id = e.attribs['id'];
 			if (id && id.length > 0) linksKnown.add(document.url + '#' + id);
-		})
-	})
+		});
+	});
 
 	return { documents, linksKnown };
 
@@ -62,9 +62,10 @@ export async function getDocuments(directory: string): Promise<{ documents: Docu
 }
 
 function extractPositionsHTML(): (tree: Element & Root) => void {
-	return (tree: Element & Root) => visit(tree, (node: Element) => {
-		if (node.type === 'element' && node.position) {
-			node.properties.dataLine = JSON.stringify(node.position.start.line);
-		}
-	})
+	return (tree: Element & Root) =>
+		visit(tree, (node: Element) => {
+			if (node.type === 'element' && node.position) {
+				node.properties.dataLine = JSON.stringify(node.position.start.line);
+			}
+		});
 }

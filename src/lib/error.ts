@@ -11,7 +11,7 @@ export class CheckError {
 	message: string;
 	constructor(errType: string, sources: Source[], message: string) {
 		const mapFileSources = new Map<string, number[]>();
-		sources.forEach(s => {
+		sources.forEach((s) => {
 			const entry = mapFileSources.get(s.filename);
 			if (entry) {
 				entry.push(s.line);
@@ -20,11 +20,11 @@ export class CheckError {
 			}
 		});
 
-		this.sourceString = Array.from(mapFileSources.entries()).map(([f, l]: [string, number[]]) => {
-			return `${f} (L:${l.sort((a, b) => a - b).join(',')})`;
-		}).join(', ');
-
-
+		this.sourceString = Array.from(mapFileSources.entries())
+			.map(([f, l]: [string, number[]]) => {
+				return `${f} (L:${l.sort((a, b) => a - b).join(',')})`;
+			})
+			.join(', ');
 
 		this.errType = errType;
 		this.message = message;
@@ -39,12 +39,11 @@ export class CheckError {
 
 export class CheckErrors {
 	errors: CheckError[] = [];
-	constructor() { };
+	constructor() {}
 	add(type: string, sources: Source[], message: string) {
 		this.errors.push(new CheckError(type, sources, message));
 	}
 	isEmpty(): boolean {
 		return this.errors.length === 0;
 	}
-
 }
