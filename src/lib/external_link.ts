@@ -1,11 +1,11 @@
-import { request as httpsRequest } from 'node:https'; // For HTTPS requests
-import { request as httpRequest } from 'node:http'; // For HTTP requests
-import { URL } from 'url';
+import { request as httpsRequest } from 'node:https';
+import { request as httpRequest } from 'node:http';
 
 export async function checkLink(url: string, retries: number = 3): Promise<true> {
 	const parsedUrl = new URL(url);
 	const request = parsedUrl.protocol === 'https:' ? httpsRequest : httpRequest;
 	const options = {
+		timeout: 10000,
 		headers: {
 			Accept:
 				'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -22,18 +22,23 @@ export async function checkLink(url: string, retries: number = 3): Promise<true>
 	function tryRequest(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			const req = request(url, options, (res) => {
+				res.resume(); // drain response body to free the socket
 				switch (res.statusCode) {
 					case 200:
 					case 301:
 					case 302:
+					case 303:
 					case 307:
+					case 308:
 						resolve();
 						break;
 					default:
-						// Only retry for non-200 if retries remain
 						reject(`got status code: ${res.statusCode}`);
 				}
-				req.destroy();
+			});
+
+			req.on('timeout', () => {
+				req.destroy(new Error('Request timed out'));
 			});
 
 			req.on('error', (e) => {
@@ -48,12 +53,13 @@ export async function checkLink(url: string, retries: number = 3): Promise<true>
 	for (let i = 0; i < retries; i++) {
 		try {
 			await tryRequest();
-			return true; // Link is valid
+			return true;
 		} catch (error) {
 			errorMsg = String(error);
 		}
-		// Wait before retrying
-		await new Promise((res) => setTimeout(res, 1000));
+		if (i < retries - 1) {
+			await new Promise((res) => setTimeout(res, 1000));
+		}
 	}
 
 	throw new Error(`Link check failed for ${url} after ${retries} attempts: ${errorMsg}`);
