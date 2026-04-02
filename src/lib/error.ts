@@ -1,4 +1,4 @@
-import 'colors';
+import { styleText } from 'node:util';
 
 export interface Source {
 	filename: string;
@@ -28,9 +28,11 @@ export class CheckError {
 
 		this.errType = errType;
 		this.message = message;
-		console.error(`\n${errType}`.red);
-		console.error('   Used in: '.grey + this.sourceString);
-		console.error('   ' + message.grey);
+	}
+	print(): void {
+		console.error(styleText('red', `\n${this.errType}`));
+		console.error('   ' + styleText('gray', 'Used in: ') + this.sourceString);
+		console.error('   ' + styleText('gray', this.message));
 	}
 	toString(): string {
 		return this.errType + ' in ' + this.sourceString;
@@ -41,7 +43,9 @@ export class CheckErrors {
 	errors: CheckError[] = [];
 	constructor() {}
 	add(type: string, sources: Source[], message: string) {
-		this.errors.push(new CheckError(type, sources, message));
+		const error = new CheckError(type, sources, message);
+		error.print();
+		this.errors.push(error);
 	}
 	isEmpty(): boolean {
 		return this.errors.length === 0;
