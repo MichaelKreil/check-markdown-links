@@ -1,6 +1,6 @@
 FROM node:22-slim
 
-ADD . /action/
+COPY . /action/
 
 WORKDIR /action
 
