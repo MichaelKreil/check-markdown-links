@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"rootDir": "src",
 		"lib": ["ESNext"],
 		"types": ["vitest/globals"],
 		"module": "NodeNext",
