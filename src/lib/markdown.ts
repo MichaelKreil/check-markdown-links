@@ -16,8 +16,8 @@ export async function checkDocuments(directory: string, skipHosts: Set<string> =
 
 	documents.forEach((document) => {
 		const $ = cheerio.load(document.html);
-		$('[href]').each((i, e) => check(e, 'href'));
-		$('[src]').each((i, e) => check(e, 'src'));
+		$('[href]').each((_, e) => check(e, 'href'));
+		$('[src]').each((_, e) => check(e, 'src'));
 
 		function check(e: Element, property: string) {
 			let url = e.attribs[property];
