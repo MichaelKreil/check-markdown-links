@@ -11,7 +11,7 @@
     "lint": "eslint . --color",
     "start": "tsx src/index.ts",
     "test": "vitest run",
-    "upgrade": "npm-check-updates -u && rm -f package-lock.json; rm -rf node_modules; npm i && npm update"
+    "upgrade": "npm-check-updates -u && rm -f package-lock.json; rm -rf node_modules; npm i && npm update && npm audit fix"
   },
   "author": "Michael Kreil <github@michael-kreil.de> (https://github.com/MichaelKreil)",
   "license": "MIT",
